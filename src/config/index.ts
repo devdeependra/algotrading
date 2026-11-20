@@ -9,6 +9,11 @@ export interface AppConfig {
   /** Key for signing session cookies. */
   sessionSecret: Buffer;
   sessionTtlSeconds: number;
+  /**
+   * The one account that is created as superadmin + active on registration
+   * and can never be demoted or suspended. Lower-cased.
+   */
+  superadminEmail: string;
 }
 
 /**
@@ -83,7 +88,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     problems,
   );
 
+  const superadminEmail = (env['SUPERADMIN_EMAIL'] ?? '').trim().toLowerCase();
+  if (superadminEmail === '' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(superadminEmail)) {
+    problems.push('SUPERADMIN_EMAIL is required and must be an email address');
+  }
+
   if (problems.length > 0) throw new ConfigError(problems);
 
-  return { nodeEnv, port, databaseUrl, masterKey, sessionSecret, sessionTtlSeconds };
+  return { nodeEnv, port, databaseUrl, masterKey, sessionSecret, sessionTtlSeconds, superadminEmail };
 }

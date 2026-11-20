@@ -9,6 +9,7 @@ const valid = (): NodeJS.ProcessEnv => ({
   MASTER_KEY: randomBytes(32).toString('base64'),
   SESSION_SECRET: randomBytes(48).toString('base64'),
   SESSION_TTL_SECONDS: '600',
+  SUPERADMIN_EMAIL: 'Root@Example.com',
 });
 
 describe('loadConfig', () => {
@@ -19,6 +20,7 @@ describe('loadConfig', () => {
     expect(cfg.masterKey.length).toBe(32);
     expect(cfg.sessionSecret.length).toBe(48);
     expect(cfg.sessionTtlSeconds).toBe(600);
+    expect(cfg.superadminEmail).toBe('root@example.com');
   });
 
   it('applies defaults', () => {
@@ -53,6 +55,14 @@ describe('loadConfig', () => {
     expect(message).toContain('PORT');
     expect(message).not.toContain('c2hvcnQ=');
     expect(message).not.toContain('mysql://nope');
+  });
+
+  it('requires a superadmin email', () => {
+    const env = valid();
+    env['SUPERADMIN_EMAIL'] = 'not-an-email';
+    expect(() => loadConfig(env)).toThrow(/SUPERADMIN_EMAIL/);
+    delete env['SUPERADMIN_EMAIL'];
+    expect(() => loadConfig(env)).toThrow(/SUPERADMIN_EMAIL/);
   });
 
   it('rejects a master key that is not exactly 32 bytes', () => {
