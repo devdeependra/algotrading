@@ -7,10 +7,17 @@ of truth; this file only orients you.
 
 ## Current state
 
-**Pre-Phase 1. No code exists yet** — the repo is `docs/` and this file. There
-is no `package.json`, so the commands below do not work until the Phase 1
-scaffold lands. Phase 1 cannot finish until open decision #6 (hosting) is made,
-because the Dhan static IP locks for 7 days once set.
+**Phase 1 scaffold is in place locally**: Express 5 API with health and
+user auth, envelope encryption, config loading, SQL migration runner, Vite
+React shell, 34 passing tests. Not yet done from the Phase 1 gate: CI
+workflow, GitHub remote, and deployment to the target host. Those wait on the
+hosting decision (spec §11 #6), because the Dhan static IP locks for 7 days
+once set.
+
+Local Postgres is the `navodaya-postgres` Docker container from the sibling
+project, with a dedicated `algotrading` role and `algotrading` /
+`algotrading_test` databases. If connections hang, the container is probably
+paused: `docker unpause navodaya-postgres`.
 
 ## What this is
 
@@ -68,20 +75,31 @@ name, or assumption may leak outside its adapter directory.
 
 ## Commands
 
-Planned for the Phase 1 scaffold; keep this block accurate when `package.json`
-is created.
-
 ```bash
-npm run dev          # API with hot reload
-npm run dev:ui       # Vite dev server
-npm run test         # vitest, whole suite
-npx vitest run src/strategy/indicators/rsi.test.ts   # single file
-npx vitest run -t "regular bullish"                  # single test by name
-npm run typecheck    # tsc --noEmit
-npm run lint
-npm run migrate      # apply DB migrations
-npm run migrate:new  # scaffold a new migration
+npm run dev          # API with hot reload (tsx watch)
+npm run dev:ui       # Vite dev server, proxies /api to :3000
+npm test             # vitest, whole suite; DB tests run if TEST_DATABASE_URL is set
+npx vitest run src/crypto/envelope.test.ts   # single file
+npx vitest run -t "round-trips"              # single test by name
+npm run typecheck    # tsc --noEmit for API and UI
+npm run lint         # eslint flat config, typescript-eslint
+npm run migrate      # apply pending SQL migrations
+npm run migrate:new <name>   # scaffold src/db/migrations/<ts>_<name>.sql
+npm run build && npm start   # compiled API serving ui/dist
+npm run keygen       # fresh base64 key for MASTER_KEY / SESSION_SECRET
 ```
+
+Conventions the scaffold established:
+- ESM with `NodeNext` resolution: relative imports end in `.js` even in `.ts`.
+- `.env` is read by `src/config/dotenv.ts` (stdlib, no dotenv package) and
+  validated by `loadConfig()`, which fails fast and names variables without
+  echoing values.
+- Migrations are forward-only `.sql` files applied in their own transaction;
+  there is no down migration.
+- Routes take their dependencies (`UserRepository`, `checkDb`) as arguments so
+  API tests run against `src/test/fakeUsers.ts` with no database.
+- The error middleware returns `{ error }` and logs only the error name and
+  message, never request bodies or raw broker payloads.
 
 ## Architecture
 
