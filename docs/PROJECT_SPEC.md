@@ -383,7 +383,7 @@ PostgreSQL. No market data is stored — candles are fetched per run and discard
 
 | Table | Purpose |
 |---|---|
-| `users` | id, email, password_hash, created_at |
+| `users` | id, email, password_hash, role (superadmin/admin/member), status (pending/active/suspended/rejected), approved_by, approved_at, created_at, updated_at |
 | `broker_accounts` | user_id, broker_id, label, encrypted_credentials, status |
 | `broker_sessions` | broker_account_id, encrypted_access_token, expires_at, last_renewed_at |
 | `instruments` | internal id, symbol, exchange, name, instrument_type, tick_size, lot_size |
@@ -394,7 +394,7 @@ PostgreSQL. No market data is stored — candles are fetched per run and discard
 | `orders` | **Phase 5+.** signal_id, broker_account_id, broker_order_id, client_tag, side, qty, order_type, status, filled_qty, avg_price, timestamps |
 | `positions` | **Phase 5+.** config_id, instrument_id, state, qty, avg_entry_price, opened_at, closed_at |
 | `risk_events` | **Phase 6+.** type, details JSONB, created_at — every limit breach and kill-switch activation |
-| `audit_log` | actor, action, entity, before/after JSONB, created_at |
+| `audit_log` | actor_id (null = system), action, entity_type, entity_id, before/after JSONB, created_at. Live since Phase 1b |
 
 ### 8.1 Credential encryption
 
@@ -435,6 +435,22 @@ Each phase has an acceptance gate. Do not start the next until it passes.
 Express/TS scaffold, migrations, user auth, envelope encryption helpers,
 config loading, CI, deployment to the target host.
 **Gate:** register, log in, health endpoint green in production.
+
+### Phase 1b — Users, roles, approval
+Roles `superadmin` > `admin` > `member`. The superadmin is the account whose
+email matches `SUPERADMIN_EMAIL`; it is created active and can never be
+demoted or suspended. Every other signup is a `pending` member: it can log in
+and manage its own profile, nothing else, until an admin approves it. Admins
+approve, reject, suspend and reinstate members. Only the superadmin changes
+roles. Nobody modifies their own account. Every transition writes `audit_log`.
+Startup reconciliation re-binds the superadmin if the config email changes.
+
+**Regulatory note:** roles gate access to the operator's single system. An
+approved member must never be able to attach their own broker account or have
+orders placed for them (§4).
+
+**Gate:** signup lands pending; pending user sees only the waiting page and
+profile; admin approves from the users page; audit rows exist for each step.
 
 ### Phase 2 — Broker abstraction + Dhan
 `BrokerAdapter` interface, capability model, canonical types, error taxonomy,

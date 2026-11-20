@@ -7,12 +7,17 @@ of truth; this file only orients you.
 
 ## Current state
 
-**Phase 1 scaffold is in place locally**: Express 5 API with health and
-user auth, envelope encryption, config loading, SQL migration runner, Vite
-React shell, 34 passing tests. Not yet done from the Phase 1 gate: CI
-workflow, GitHub remote, and deployment to the target host. Those wait on the
-hosting decision (spec §11 #6), because the Dhan static IP locks for 7 days
-once set.
+**Phase 1 and 1b done locally**: Express 5 API with health, user auth,
+roles (`superadmin` > `admin` > `member`) with a pending-approval workflow,
+admin users page, audit log, envelope encryption, config loading, SQL
+migration runner, Vite React UI, 47 passing tests. Repo is on GitHub
+(`devdeependra/algotrading`) with CI. Deployment is deferred but must land
+before Phase 4, whose gate needs five unattended trading days on an
+always-on host. Hosting decision (spec §11 #6) still open.
+
+The superadmin is whichever account matches `SUPERADMIN_EMAIL`; see spec
+Phase 1b. Roles gate access to the operator's one system only. Never let an
+approved member attach a broker account of their own.
 
 Local Postgres is the `navodaya-postgres` Docker container from the sibling
 project, with a dedicated `algotrading` role and `algotrading` /
@@ -96,8 +101,11 @@ Conventions the scaffold established:
   echoing values.
 - Migrations are forward-only `.sql` files applied in their own transaction;
   there is no down migration.
-- Routes take their dependencies (`UserRepository`, `checkDb`) as arguments so
-  API tests run against `src/test/fakeUsers.ts` with no database.
+- Routes take their dependencies (`UserRepository`, `AuditLogRepository`,
+  `checkDb`) as arguments so API tests run against the fakes in `src/test/`
+  with no database.
+- Authorization decisions live in `src/api/authz.ts` as pure functions with
+  their own tests. Routes call them; they never embed role checks inline.
 - The error middleware returns `{ error }` and logs only the error name and
   message, never request bodies or raw broker payloads.
 

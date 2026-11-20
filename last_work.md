@@ -1,5 +1,30 @@
 # Last work
 
+## 2026-11-20 (evening) — Phase 1b: roles, approval workflow, admin panel
+
+**Done**
+- Migration `20261120000002`: `role`, `status`, `approved_by`, `approved_at`,
+  `updated_at` on `users`; new `audit_log` table.
+- `SUPERADMIN_EMAIL` config. Registration with that email → superadmin +
+  active; all others → pending member. `src/users/ensureSuperadmin.ts` runs
+  at startup to re-bind if the email changes (and did so for the real
+  account, which had registered before the migration).
+- `src/api/authz.ts`: pure `canLogIn` / `canManage` rules, fully unit tested.
+- Middleware `requireAuth` (blocks suspended/rejected), `requireActive`,
+  `requireRole`. Routes: `POST /api/auth/password`, `GET /api/admin/users`,
+  `POST /api/admin/users/:id/{approve,reject,suspend,reinstate}`,
+  `PATCH /api/admin/users/:id/role`. Every transition writes `audit_log`.
+- UI: tiny path router (`ui/src/router.ts`), layout with nav, pages Home
+  (pending notice vs dashboard), Profile (change password), Admin Users
+  (pending queue + all users with actions). No React Router yet.
+- 47 tests passing. Typecheck + lint clean. Pushed to GitHub with CI.
+- Smoke: a throwaway `smoke-member@example.com` was registered and left
+  **pending** so the user can approve/reject it from the UI.
+
+**Next step**
+- User tries the approval in the UI, then confirms Phase 2 approach
+  (BrokerAdapter interface, capability model, Dhan adapter) before code.
+
 ## 2026-11-20 (later) — Run, CI, repo, Phase 1b proposal
 
 **Done**
