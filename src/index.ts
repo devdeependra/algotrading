@@ -5,7 +5,9 @@ import { createApp } from './api/app.js';
 import { loadDotEnv } from './config/dotenv.js';
 import { loadConfig } from './config/index.js';
 import { checkDatabase, createPool } from './db/pool.js';
+import { PgAuditLogRepository } from './db/repositories/auditLog.js';
 import { PgUserRepository } from './db/repositories/users.js';
+import { ensureSuperadmin } from './users/ensureSuperadmin.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(here, '..');
@@ -16,9 +18,15 @@ const config = loadConfig();
 const { version } = JSON.parse(readFileSync(join(rootDir, 'package.json'), 'utf8')) as { version: string };
 
 const pool = createPool(config.databaseUrl);
+const users = new PgUserRepository(pool);
+const audit = new PgAuditLogRepository(pool);
+
+await ensureSuperadmin(users, audit, config.superadminEmail);
+
 const app = createApp({
   config,
-  users: new PgUserRepository(pool),
+  users,
+  audit,
   checkDb: () => checkDatabase(pool),
   version,
   staticDir: join(rootDir, 'ui', 'dist'),

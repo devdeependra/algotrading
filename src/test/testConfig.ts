@@ -9,6 +9,7 @@ export function testConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     masterKey: randomBytes(32),
     sessionSecret: randomBytes(32),
     sessionTtlSeconds: 3600,
+    superadminEmail: 'root@example.com',
     ...overrides,
   };
 }

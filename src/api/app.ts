@@ -4,13 +4,16 @@ import express from 'express';
 import type { ErrorRequestHandler, Express } from 'express';
 import type { AppConfig } from '../config/index.js';
 import type { ScryptParams } from '../crypto/password.js';
+import type { AuditLogRepository } from '../db/repositories/auditLog.js';
 import type { UserRepository } from '../db/repositories/users.js';
+import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
 import { healthRouter } from './routes/health.js';
 
 export interface AppDeps {
   config: AppConfig;
   users: UserRepository;
+  audit: AuditLogRepository;
   checkDb: () => Promise<boolean>;
   version: string;
   /** Directory of built UI assets to serve, if any. */
@@ -27,7 +30,8 @@ export function createApp(deps: AppDeps): Express {
 
   const api = express.Router();
   api.use(healthRouter({ checkDb: deps.checkDb, version: deps.version }));
-  api.use(authRouter({ config: deps.config, users: deps.users, ...(deps.scryptParams ? { scryptParams: deps.scryptParams } : {}) }));
+  api.use(authRouter({ config: deps.config, users: deps.users, audit: deps.audit, ...(deps.scryptParams ? { scryptParams: deps.scryptParams } : {}) }));
+  api.use(adminRouter({ config: deps.config, users: deps.users, audit: deps.audit }));
   api.use((_req, res) => {
     res.status(404).json({ error: 'Not found' });
   });
