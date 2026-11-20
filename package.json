@@ -1,0 +1,44 @@
+{
+  "name": "algotrading",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-broker algorithmic trading platform for Indian markets",
+  "author": "Deependra Singh <dev.deependra@gmail.com>",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "ui"
+  ],
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "dev:ui": "npm run dev --workspace ui",
+    "build": "tsc -p tsconfig.build.json && npm run build --workspace ui",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit && npm run typecheck --workspace ui",
+    "lint": "eslint .",
+    "migrate": "tsx src/db/migrate.ts up",
+    "migrate:status": "tsx src/db/migrate.ts status",
+    "migrate:new": "tsx src/db/migrate.ts new",
+    "keygen": "tsx src/crypto/keygen.ts"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "eslint": "^9.39.5",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^4.1.12"
+  }
+}
