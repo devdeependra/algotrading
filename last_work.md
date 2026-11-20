@@ -1,5 +1,21 @@
 # Last work
 
+## 2026-11-20 (later) — Run, CI, repo, Phase 1b proposal
+
+**Done**
+- Ran the app: API on :3000 (`npm run dev`), UI on :5173 (`npm run dev:ui`).
+  Verified health through the Vite proxy and the rendered sign-in page.
+- Added `.github/workflows/ci.yml` (npm ci, typecheck, lint, test with a
+  Postgres 16 service, build, advisory audit). Committed.
+- Set `origin` to `git@github.com:devdeependra/algotrading.git`. Push failed
+  because the repo does not exist yet; `gh` is not installed.
+- User asked for roles + approval workflow + admin panel before Phase 2.
+  Proposed as Phase 1b; awaiting confirmation on the open choices.
+
+**Next step**
+- User creates the GitHub repo (or installs/logs in `gh`), then push.
+- Confirm Phase 1b design, then implement.
+
 ## 2026-11-20 — Phase 1 scaffold
 
 **Done**

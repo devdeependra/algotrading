@@ -3,9 +3,14 @@
 ## Blocking
 - [ ] Hosting decision: Oracle Cloud ARM vs AWS Lightsail (spec §11 #6). Needed
       before deploy and before setting the Dhan static IP (locks 7 days).
-- [ ] Create GitHub remote, push, add `.github/workflows/ci.yml`
-      (npm ci → typecheck → lint → test, with a Postgres service for
-      `TEST_DATABASE_URL`, concurrency cancel-in-progress).
+- [ ] Push to GitHub. Remote `origin` is set to
+      `git@github.com:devdeependra/algotrading.git` and CI workflow is
+      committed; the repo itself must be created first (website, or
+      `brew install gh && gh auth login`). Then `git push -u origin main`.
+- [ ] Deployment deferred, but it must land before Phase 4: that gate needs
+      five unattended trading days on an always-on host.
+- [ ] Phase 1b (proposed 2026-11-20, awaiting confirmation): roles + approval
+      workflow + admin panel. See last_work.md for the proposal summary.
 
 ## Phase 1 follow-ups
 - [ ] Rate-limit `/api/auth/login` and `/api/auth/register` (stdlib, in-memory
