@@ -1,5 +1,29 @@
 # Last work
 
+## 2026-11-23 — Dhan verification for Phase 2; stale UI build fixed
+
+**Done**
+- Rebuilt `ui/dist`; port 3000 had been serving the Phase 1 bundle. Added a
+  reminder to rebuild after UI changes. Dev happens on :5173.
+- Verified from official Dhan docs and the live instrument CSV: historical
+  data (daily + intraday), instruments CSV columns, market quote, rate-limit
+  table, trading and data error catalogues, enums. Recorded in
+  `docs/brokers/dhan.md`; CLAUDE.md hard rule 5 and spec §6.1 updated.
+  BAJAJHFL NSE_EQ = securityId 25270.
+- Superadmin password reset on request (one-off script, deleted).
+
+**Current state**
+- Phase 1 and 1b complete and pushed. Phase 2 approach proposed to the user,
+  awaiting sign-off before code (question-first rule).
+
+**Next step**
+- On sign-off: `src/brokers/` types + capabilities + BrokerError + registry +
+  contract suite, then `src/brokers/dhan/` (TOTP, auth, instruments, candles),
+  migrations for broker_accounts / broker_sessions / instruments /
+  instrument_broker_refs, Broker settings page in the UI.
+- Need from user: whether a Dhan account with TOTP + Data API plan exists
+  (required for the Phase 2 gate, not for building against fixtures).
+
 ## 2026-11-20 (evening) — Phase 1b: roles, approval workflow, admin panel
 
 **Done**
