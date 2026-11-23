@@ -13,6 +13,9 @@
       (signals, run history). Decide what `member` may see then.
 
 ## Phase 1 follow-ups
+- [ ] After any UI change, run `npm run build --workspace ui` so port 3000
+      serves the current bundle. It only serves the last build; use :5173
+      for live development.
 - [ ] Rate-limit `/api/auth/login` and `/api/auth/register` (stdlib, in-memory
       is fine for a single instance).
 - [ ] Decide on `helmet` and a structured logger (`pino`) — both are new
