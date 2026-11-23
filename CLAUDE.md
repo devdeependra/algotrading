@@ -60,8 +60,9 @@ name, or assumption may leak outside its adapter directory.
 5. **Do not invent broker API details.** If an endpoint, field name, parameter,
    or auth step is not recorded as VERIFIED in `docs/brokers/<broker>.md`, stop
    and ask. Kotak Neo is currently UNVERIFIED in its entirety. Dhan is verified
-   for auth, profile and static-IP endpoints only; historical data, instruments,
-   orders and quotes are listed as "Not yet verified" in `docs/brokers/dhan.md`.
+   for auth, profile, static IP, instruments, historical data, market quote,
+   rate limits and error codes; orders, postback, portfolio and sandbox are
+   still listed as "Not yet verified" in `docs/brokers/dhan.md`.
 6. **Ask before adding a dependency.** Prefer the standard library.
 7. **Every broker API call goes through an adapter.** No `fetch` to a broker
    host from `src/strategy/`, `src/scheduler/`, or `src/api/`. A

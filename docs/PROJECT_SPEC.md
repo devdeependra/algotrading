@@ -274,6 +274,11 @@ Other verified facts:
   available — set primary to the main host, keep secondary in reserve.
 - Sandbox available.
 - `GET /v2/profile` is the cheap liveness/validity check.
+- Historical data, instruments, market quote, rate limits and error codes
+  verified 2026-11-23; see `docs/brokers/dhan.md`. Notable: BAJAJHFL on
+  NSE_EQ is `securityId` 25270; intraday intervals are 1/5/15/25/60 minutes
+  (no 30m) with a 90-day cap per request; prices arrive as JSON floats;
+  trading and data endpoints use different error-code catalogues.
 
 ### 6.2 Kotak Neo — secondary, UNVERIFIED
 
